@@ -1,0 +1,634 @@
+--- flatpak-builder-0.10.10/doc/flatpak-builder.xml~	2018-04-25 20:21:54.000000000 +0300
++++ flatpak-builder-0.10.10/doc/flatpak-builder.xml	2018-05-29 23:34:54.350864636 +0300
+@@ -199,7 +199,7 @@
+ 
+                 <listitem><para>
+                   Download missing sources, but don't update local mirrors of version control repos. This is useful
+-                  to rebuild things but without updating git, bzr or svn repositories from the remote repository.
++                  to rebuild things but without updating git or svn repositories from the remote repository.
+                 </para></listitem>
+             </varlistentry>
+ 
+@@ -499,7 +499,7 @@
+                 <term><option>--extra-sources=SOURCE-DIR</option></term>
+ 
+                 <listitem><para>
+-                  When downloading sources (archives, files, git, bzr, svn), look in this
++                  When downloading sources (archives, files, git, svn), look in this
+                   directory for pre-existing copies and use them instead of downloading.
+                 </para></listitem>
+             </varlistentry>
+@@ -508,7 +508,7 @@
+                 <term><option>--extra-sources-url=URL</option></term>
+ 
+                 <listitem><para>
+-                  When downloading sources (archives, files, git, bzr, svn), look at this url
++                  When downloading sources (archives, files, git, svn), look at this url
+                   for mirrored downloads before downloading from the original url.
+                 </para></listitem>
+             </varlistentry>
+@@ -671,15 +671,6 @@
+                     "url": "git://git.gnome.org/babl"
+                 }
+             ]
+-        },
+-        {
+-            "name": "testapp",
+-            "sources": [
+-                {
+-                    "type": "bzr",
+-                    "url": "lp:testapp"
+-                }
+-            ]
+         }
+     ]
+ }
+
+--- flatpak-builder-0.10.10/doc/flatpak-manifest.xml~	2018-04-26 11:54:03.000000000 +0300
++++ flatpak-builder-0.10.10/doc/flatpak-manifest.xml	2018-05-29 23:34:10.406452849 +0300
+@@ -650,23 +650,6 @@
+                 </variablelist>
+             </refsect3>
+             <refsect3>
+-                <title>Bzr sources</title>
+-                <variablelist>
+-                    <varlistentry>
+-                        <term><option>type</option></term>
+-                        <listitem><para>"bzr"</para></listitem>
+-                    </varlistentry>
+-                    <varlistentry>
+-                        <term><option>url</option> (string)</term>
+-                        <listitem><para>URL of the bzr repository</para></listitem>
+-                    </varlistentry>
+-                    <varlistentry>
+-                        <term><option>revision</option> (string)</term>
+-                        <listitem><para>A specific revision to use in the branch</para></listitem>
+-                    </varlistentry>
+-                </variablelist>
+-            </refsect3>
+-            <refsect3>
+                 <title>Svn sources</title>
+                 <variablelist>
+                     <varlistentry>
+@@ -994,15 +977,6 @@
+                     "url": "git://git.gnome.org/babl"
+                 }
+             ]
+-        },
+-        {
+-            "name": "testapp",
+-            "sources": [
+-                {
+-                    "type": "bzr",
+-                    "url": "lp:testapp"
+-                }
+-            ]
+         }
+     ]
+ }
+
+--- flatpak-builder-0.10.10/Makefile.in~	2018-04-26 16:30:56.000000000 +0300
++++ flatpak-builder-0.10.10/Makefile.in	2018-05-29 23:33:17.490161154 +0300
+@@ -246,7 +246,6 @@ am_flatpak_builder_OBJECTS =  \
+ 	src/flatpak_builder-builder-source.$(OBJEXT) \
+ 	src/flatpak_builder-builder-source-archive.$(OBJEXT) \
+ 	src/flatpak_builder-builder-source-git.$(OBJEXT) \
+-	src/flatpak_builder-builder-source-bzr.$(OBJEXT) \
+ 	src/flatpak_builder-builder-source-svn.$(OBJEXT) \
+ 	src/flatpak_builder-builder-source-file.$(OBJEXT) \
+ 	src/flatpak_builder-builder-source-script.$(OBJEXT) \
+@@ -923,8 +922,6 @@ flatpak_builder_SOURCES = \
+ 	src/builder-source-archive.h \
+ 	src/builder-source-git.c \
+ 	src/builder-source-git.h \
+-	src/builder-source-bzr.c \
+-	src/builder-source-bzr.h \
+ 	src/builder-source-svn.c \
+ 	src/builder-source-svn.h \
+ 	src/builder-source-file.c \
+@@ -1368,8 +1365,6 @@ src/flatpak_builder-builder-source-archi
+ 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+ src/flatpak_builder-builder-source-git.$(OBJEXT): src/$(am__dirstamp) \
+ 	src/$(DEPDIR)/$(am__dirstamp)
+-src/flatpak_builder-builder-source-bzr.$(OBJEXT): src/$(am__dirstamp) \
+-	src/$(DEPDIR)/$(am__dirstamp)
+ src/flatpak_builder-builder-source-svn.$(OBJEXT): src/$(am__dirstamp) \
+ 	src/$(DEPDIR)/$(am__dirstamp)
+ src/flatpak_builder-builder-source-file.$(OBJEXT):  \
+@@ -1510,7 +1505,6 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/flatpak_builder-builder-options.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/flatpak_builder-builder-post-process.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/flatpak_builder-builder-source-archive.Po@am__quote@
+-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/flatpak_builder-builder-source-bzr.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/flatpak_builder-builder-source-dir.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/flatpak_builder-builder-source-extra-data.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/flatpak_builder-builder-source-file.Po@am__quote@
+@@ -1735,20 +1729,6 @@ src/flatpak_builder-builder-source-git.o
+ @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+ @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(flatpak_builder_CFLAGS) $(CFLAGS) -c -o src/flatpak_builder-builder-source-git.obj `if test -f 'src/builder-source-git.c'; then $(CYGPATH_W) 'src/builder-source-git.c'; else $(CYGPATH_W) '$(srcdir)/src/builder-source-git.c'; fi`
+ 
+-src/flatpak_builder-builder-source-bzr.o: src/builder-source-bzr.c
+-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(flatpak_builder_CFLAGS) $(CFLAGS) -MT src/flatpak_builder-builder-source-bzr.o -MD -MP -MF src/$(DEPDIR)/flatpak_builder-builder-source-bzr.Tpo -c -o src/flatpak_builder-builder-source-bzr.o `test -f 'src/builder-source-bzr.c' || echo '$(srcdir)/'`src/builder-source-bzr.c
+-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/flatpak_builder-builder-source-bzr.Tpo src/$(DEPDIR)/flatpak_builder-builder-source-bzr.Po
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/builder-source-bzr.c' object='src/flatpak_builder-builder-source-bzr.o' libtool=no @AMDEPBACKSLASH@
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(flatpak_builder_CFLAGS) $(CFLAGS) -c -o src/flatpak_builder-builder-source-bzr.o `test -f 'src/builder-source-bzr.c' || echo '$(srcdir)/'`src/builder-source-bzr.c
+-
+-src/flatpak_builder-builder-source-bzr.obj: src/builder-source-bzr.c
+-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(flatpak_builder_CFLAGS) $(CFLAGS) -MT src/flatpak_builder-builder-source-bzr.obj -MD -MP -MF src/$(DEPDIR)/flatpak_builder-builder-source-bzr.Tpo -c -o src/flatpak_builder-builder-source-bzr.obj `if test -f 'src/builder-source-bzr.c'; then $(CYGPATH_W) 'src/builder-source-bzr.c'; else $(CYGPATH_W) '$(srcdir)/src/builder-source-bzr.c'; fi`
+-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/flatpak_builder-builder-source-bzr.Tpo src/$(DEPDIR)/flatpak_builder-builder-source-bzr.Po
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/builder-source-bzr.c' object='src/flatpak_builder-builder-source-bzr.obj' libtool=no @AMDEPBACKSLASH@
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(flatpak_builder_CFLAGS) $(CFLAGS) -c -o src/flatpak_builder-builder-source-bzr.obj `if test -f 'src/builder-source-bzr.c'; then $(CYGPATH_W) 'src/builder-source-bzr.c'; else $(CYGPATH_W) '$(srcdir)/src/builder-source-bzr.c'; fi`
+-
+ src/flatpak_builder-builder-source-svn.o: src/builder-source-svn.c
+ @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(flatpak_builder_CFLAGS) $(CFLAGS) -MT src/flatpak_builder-builder-source-svn.o -MD -MP -MF src/$(DEPDIR)/flatpak_builder-builder-source-svn.Tpo -c -o src/flatpak_builder-builder-source-svn.o `test -f 'src/builder-source-svn.c' || echo '$(srcdir)/'`src/builder-source-svn.c
+ @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/flatpak_builder-builder-source-svn.Tpo src/$(DEPDIR)/flatpak_builder-builder-source-svn.Po
+
+--- flatpak-builder-0.10.10/src/builder-source-bzr.c~	2017-10-12 17:18:45.000000000 +0300
++++ flatpak-builder-0.10.10/src/builder-source-bzr.c	1970-01-01 03:00:00.000000000 +0300
+@@ -1,399 +0,0 @@
+-/* builder-source-bzr.c
+- *
+- * Copyright (C) 2015 Red Hat, Inc
+- *
+- * This file is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU Lesser General Public License as
+- * published by the Free Software Foundation; either version 2 of the
+- * License, or (at your option) any later version.
+- *
+- * This file is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public License
+- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+- *
+- * Authors:
+- *       Alexander Larsson <alexl@redhat.com>
+- */
+-
+-#include "config.h"
+-
+-#include <string.h>
+-#include <fcntl.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <sys/statfs.h>
+-
+-#include "builder-utils.h"
+-
+-#include "builder-source-bzr.h"
+-#include "builder-utils.h"
+-#include "builder-flatpak-utils.h"
+-
+-struct BuilderSourceBzr
+-{
+-  BuilderSource parent;
+-
+-  char         *url;
+-  char         *revision;
+-};
+-
+-typedef struct
+-{
+-  BuilderSourceClass parent_class;
+-} BuilderSourceBzrClass;
+-
+-G_DEFINE_TYPE (BuilderSourceBzr, builder_source_bzr, BUILDER_TYPE_SOURCE);
+-
+-enum {
+-  PROP_0,
+-  PROP_URL,
+-  PROP_REVISION,
+-  LAST_PROP
+-};
+-
+-static void
+-builder_source_bzr_finalize (GObject *object)
+-{
+-  BuilderSourceBzr *self = (BuilderSourceBzr *) object;
+-
+-  g_free (self->url);
+-  g_free (self->revision);
+-
+-  G_OBJECT_CLASS (builder_source_bzr_parent_class)->finalize (object);
+-}
+-
+-static void
+-builder_source_bzr_get_property (GObject    *object,
+-                                 guint       prop_id,
+-                                 GValue     *value,
+-                                 GParamSpec *pspec)
+-{
+-  BuilderSourceBzr *self = BUILDER_SOURCE_BZR (object);
+-
+-  switch (prop_id)
+-    {
+-    case PROP_URL:
+-      g_value_set_string (value, self->url);
+-      break;
+-
+-    case PROP_REVISION:
+-      g_value_set_string (value, self->revision);
+-      break;
+-
+-    default:
+-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+-    }
+-}
+-
+-static void
+-builder_source_bzr_set_property (GObject      *object,
+-                                 guint         prop_id,
+-                                 const GValue *value,
+-                                 GParamSpec   *pspec)
+-{
+-  BuilderSourceBzr *self = BUILDER_SOURCE_BZR (object);
+-
+-  switch (prop_id)
+-    {
+-    case PROP_URL:
+-      g_free (self->url);
+-      self->url = g_value_dup_string (value);
+-      break;
+-
+-    case PROP_REVISION:
+-      g_free (self->revision);
+-      self->revision = g_value_dup_string (value);
+-      break;
+-
+-    default:
+-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+-    }
+-}
+-
+-static gboolean
+-bzr (GFile   *dir,
+-     char   **output,
+-     GError **error,
+-     ...)
+-{
+-  gboolean res;
+-  va_list ap;
+-
+-  va_start (ap, error);
+-  res = flatpak_spawn (dir, output, 0, error, "bzr", ap);
+-  va_end (ap);
+-
+-  return res;
+-}
+-
+-static GFile *
+-get_mirror_dir (BuilderSourceBzr *self, BuilderContext *context)
+-{
+-  g_autoptr(GFile) bzr_dir = NULL;
+-  g_autofree char *filename = NULL;
+-  g_autofree char *bzr_dir_path = NULL;
+-
+-  bzr_dir = g_file_get_child (builder_context_get_state_dir (context),
+-                              "bzr");
+-
+-  bzr_dir_path = g_file_get_path (bzr_dir);
+-  g_mkdir_with_parents (bzr_dir_path, 0755);
+-
+-  filename = builder_uri_to_filename (self->url);
+-  return g_file_get_child (bzr_dir, filename);
+-}
+-
+-static char *
+-get_current_commit (BuilderSourceBzr *self, BuilderContext *context, GError **error)
+-{
+-  g_autoptr(GFile) mirror_dir = NULL;
+-  char *output = NULL;
+-
+-  mirror_dir = get_mirror_dir (self, context);
+-
+-  if (!bzr (mirror_dir, &output, error,
+-            "revno", NULL))
+-    return NULL;
+-
+-  return output;
+-}
+-
+-static gboolean
+-builder_source_bzr_download (BuilderSource  *source,
+-                             gboolean        update_vcs,
+-                             BuilderContext *context,
+-                             GError        **error)
+-{
+-  BuilderSourceBzr *self = BUILDER_SOURCE_BZR (source);
+-
+-  g_autoptr(GFile) mirror_dir = NULL;
+-
+-  if (self->url == NULL)
+-    {
+-      g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED, "URL not specified");
+-      return FALSE;
+-    }
+-
+-  mirror_dir = get_mirror_dir (self, context);
+-
+-  if (!g_file_query_exists (mirror_dir, NULL))
+-    {
+-      g_autofree char *filename = g_file_get_basename (mirror_dir);
+-      g_autoptr(GFile) parent = g_file_get_parent (mirror_dir);
+-      g_autofree char *mirror_path = g_file_get_path (mirror_dir);
+-      g_autofree char *path_tmp = g_strconcat (mirror_path, ".clone_XXXXXX", NULL);
+-      g_autofree char *filename_tmp = NULL;
+-      g_autoptr(GFile) mirror_dir_tmp = NULL;
+-      g_autoptr(GFile) cached_bzr_dir = NULL;
+-      const char *branch_source;
+-
+-      g_print ("Getting bzr repo %s\n", self->url);
+-
+-      if (g_mkdtemp_full (path_tmp, 0755) == NULL)
+-        return flatpak_fail (error, "Can't create temporary directory");
+-
+-      /* bzr can't check out to the empty dir, so remove it */
+-      rmdir (path_tmp);
+-
+-      mirror_dir_tmp = g_file_new_for_path (path_tmp);
+-      filename_tmp = g_file_get_basename (mirror_dir_tmp);
+-
+-      branch_source = self->url;
+-
+-      cached_bzr_dir = builder_context_find_in_sources_dirs (context, "bzr", filename, NULL);
+-      if (cached_bzr_dir != NULL)
+-        branch_source = flatpak_file_get_path_cached (cached_bzr_dir);
+-
+-      if (!bzr (parent, NULL, error,
+-                "branch", branch_source,  filename_tmp, NULL))
+-        return FALSE;
+-
+-      /* Rewrite to real url if we used the cache */
+-      if (cached_bzr_dir != NULL)
+-        {
+-          g_autofree char *setting = g_strdup_printf ("parent_location=%s", self->url);
+-          if (!bzr (mirror_dir_tmp, NULL, error,
+-                    "config", setting, NULL))
+-            return FALSE;
+-
+-          if (update_vcs &&
+-              !bzr (mirror_dir_tmp, NULL, error,
+-                    "pull", NULL))
+-            return FALSE;
+-        }
+-
+-      if (!g_file_move (mirror_dir_tmp, mirror_dir, 0, NULL, NULL, NULL, error))
+-        return FALSE;
+-    }
+-  else if (update_vcs)
+-    {
+-      g_print ("Updating bzr repo %s\n", self->url);
+-
+-      if (!bzr (mirror_dir, NULL, error,
+-                "pull", NULL))
+-        return FALSE;
+-    }
+-
+-  return TRUE;
+-}
+-
+-static gboolean
+-builder_source_bzr_extract (BuilderSource  *source,
+-                            GFile          *dest,
+-                            BuilderOptions *build_options,
+-                            BuilderContext *context,
+-                            GError        **error)
+-{
+-  BuilderSourceBzr *self = BUILDER_SOURCE_BZR (source);
+-
+-  g_autoptr(GFile) mirror_dir = NULL;
+-  g_autofree char *mirror_dir_path = NULL;
+-  g_autofree char *dest_path = NULL;
+-
+-  mirror_dir = get_mirror_dir (self, context);
+-
+-  mirror_dir_path = g_file_get_path (mirror_dir);
+-  dest_path = g_file_get_path (dest);
+-
+-  if (!bzr (NULL, NULL, error,
+-            "branch", "--stacked", mirror_dir_path, dest_path, "--use-existing-dir", NULL))
+-    return FALSE;
+-
+-  if (self->revision)
+-    {
+-      g_autofree char *revarg = g_strdup_printf ("-r%s", self->revision);
+-      if (!bzr (dest, NULL, error,
+-                "revert", revarg, NULL))
+-        return FALSE;
+-    }
+-
+-  return TRUE;
+-}
+-
+-static gboolean
+-builder_source_bzr_bundle (BuilderSource  *source,
+-                           BuilderContext *context,
+-                           GError        **error)
+-{
+-  BuilderSourceBzr *self = BUILDER_SOURCE_BZR (source);
+-
+-  g_autoptr(GFile) sources_dir = NULL;
+-  g_autoptr(GFile) dest_dir = NULL;
+-  g_autoptr(GFile) dest_dir_tmp = NULL;
+-  g_autoptr(GFile) bzr_sources_dir = NULL;
+-
+-  g_autofree char *sources_dir_path = NULL;
+-
+-  g_autofree char *base_name = NULL;
+-  g_autofree char *base_name_tmp = NULL;
+-
+-  sources_dir = get_mirror_dir (self, context);
+-
+-  if (sources_dir == NULL) {
+-    g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED, "Can't locate repo with URL '%s'", self->url);
+-    return FALSE;
+-  }
+-
+-  base_name = g_file_get_basename (sources_dir);
+-
+-  bzr_sources_dir = flatpak_build_file (builder_context_get_app_dir (context),
+-                                        "sources/bzr",
+-                                        NULL);
+-  if (!flatpak_mkdir_p (bzr_sources_dir, NULL, error))
+-    return FALSE;
+-
+-  base_name_tmp = g_strconcat (base_name, ".clone_tmp", NULL);
+-  dest_dir_tmp = flatpak_build_file (bzr_sources_dir,
+-                                          base_name_tmp,
+-                                          NULL);
+-  dest_dir = flatpak_build_file (bzr_sources_dir,
+-                                 base_name,
+-                                 NULL);
+-
+-  sources_dir_path = g_file_get_path (sources_dir);
+-  if (!bzr (bzr_sources_dir, NULL, error,
+-            "branch", sources_dir_path, base_name_tmp, NULL) ||
+-      !g_file_move (dest_dir_tmp, dest_dir, 0, NULL, NULL, NULL, error))
+-    return FALSE;
+-
+-  return TRUE;
+-}
+-
+-static void
+-builder_source_bzr_checksum (BuilderSource  *source,
+-                             BuilderCache   *cache,
+-                             BuilderContext *context)
+-{
+-  BuilderSourceBzr *self = BUILDER_SOURCE_BZR (source);
+-  g_autofree char *current_commit = NULL;
+-
+-  g_autoptr(GError) error = NULL;
+-
+-  builder_cache_checksum_str (cache, self->url);
+-  builder_cache_checksum_str (cache, self->revision);
+-
+-  current_commit = get_current_commit (self, context, &error);
+-  if (current_commit)
+-    builder_cache_checksum_str (cache, current_commit);
+-  else if (error)
+-    g_warning ("Failed to get current bzr checksum: %s", error->message);
+-}
+-
+-static gboolean
+-builder_source_bzr_update (BuilderSource  *source,
+-                           BuilderContext *context,
+-                           GError        **error)
+-{
+-  BuilderSourceBzr *self = BUILDER_SOURCE_BZR (source);
+-  char *current_commit;
+-
+-  current_commit = get_current_commit (self, context, NULL);
+-  if (current_commit)
+-    {
+-      g_free (self->revision);
+-      self->revision = current_commit;
+-    }
+-
+-  return TRUE;
+-}
+-
+-static void
+-builder_source_bzr_class_init (BuilderSourceBzrClass *klass)
+-{
+-  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+-  BuilderSourceClass *source_class = BUILDER_SOURCE_CLASS (klass);
+-
+-  object_class->finalize = builder_source_bzr_finalize;
+-  object_class->get_property = builder_source_bzr_get_property;
+-  object_class->set_property = builder_source_bzr_set_property;
+-
+-  source_class->download = builder_source_bzr_download;
+-  source_class->extract = builder_source_bzr_extract;
+-  source_class->bundle = builder_source_bzr_bundle;
+-  source_class->update = builder_source_bzr_update;
+-  source_class->checksum = builder_source_bzr_checksum;
+-
+-  g_object_class_install_property (object_class,
+-                                   PROP_URL,
+-                                   g_param_spec_string ("url",
+-                                                        "",
+-                                                        "",
+-                                                        NULL,
+-                                                        G_PARAM_READWRITE));
+-  g_object_class_install_property (object_class,
+-                                   PROP_REVISION,
+-                                   g_param_spec_string ("revision",
+-                                                        "",
+-                                                        "",
+-                                                        NULL,
+-                                                        G_PARAM_READWRITE));
+-}
+-
+-static void
+-builder_source_bzr_init (BuilderSourceBzr *self)
+-{
+-}
+
+--- flatpak-builder-0.10.10/src/builder-source-bzr.h~	2017-08-24 16:19:14.000000000 +0300
++++ flatpak-builder-0.10.10/src/builder-source-bzr.h	1970-01-01 03:00:00.000000000 +0300
+@@ -1,40 +0,0 @@
+-/*
+- * Copyright © 2015 Red Hat, Inc
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2.1 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+- * Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this library. If not, see <http://www.gnu.org/licenses/>.
+- *
+- * Authors:
+- *       Alexander Larsson <alexl@redhat.com>
+- */
+-
+-#ifndef __BUILDER_SOURCE_BZR_H__
+-#define __BUILDER_SOURCE_BZR_H__
+-
+-#include "builder-source.h"
+-
+-G_BEGIN_DECLS
+-
+-typedef struct BuilderSourceBzr BuilderSourceBzr;
+-
+-#define BUILDER_TYPE_SOURCE_BZR (builder_source_bzr_get_type ())
+-#define BUILDER_SOURCE_BZR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), BUILDER_TYPE_SOURCE_BZR, BuilderSourceBzr))
+-#define BUILDER_IS_SOURCE_BZR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), BUILDER_TYPE_SOURCE_BZR))
+-
+-GType builder_source_bzr_get_type (void);
+-
+-G_DEFINE_AUTOPTR_CLEANUP_FUNC (BuilderSourceBzr, g_object_unref)
+-
+-G_END_DECLS
+-
+-#endif /* __BUILDER_SOURCE_BZR_H__ */
+
+--- flatpak-builder-0.10.10/src/builder-source.c~	2018-04-26 10:18:24.000000000 +0300
++++ flatpak-builder-0.10.10/src/builder-source.c	2018-05-29 23:35:30.319383184 +0300
+@@ -32,7 +32,6 @@
+ #include "builder-source-archive.h"
+ #include "builder-source-patch.h"
+ #include "builder-source-git.h"
+-#include "builder-source-bzr.h"
+ #include "builder-source-svn.h"
+ #include "builder-source-file.h"
+ #include "builder-source-dir.h"
+@@ -263,8 +262,6 @@ builder_source_to_json (BuilderSource *s
+     type = "patch";
+   else if (BUILDER_IS_SOURCE_GIT (self))
+     type = "git";
+-  else if (BUILDER_IS_SOURCE_BZR (self))
+-    type = "bzr";
+   else if (BUILDER_IS_SOURCE_SVN (self))
+     type = "svn";
+   else
+@@ -302,8 +299,6 @@ builder_source_from_json (JsonNode *node
+     return (BuilderSource *) json_gobject_deserialize (BUILDER_TYPE_SOURCE_PATCH, node);
+   else if (strcmp (type, "git") == 0)
+     return (BuilderSource *) json_gobject_deserialize (BUILDER_TYPE_SOURCE_GIT, node);
+-  else if (strcmp (type, "bzr") == 0)
+-    return (BuilderSource *) json_gobject_deserialize (BUILDER_TYPE_SOURCE_BZR, node);
+   else if (strcmp (type, "svn") == 0)
+     return (BuilderSource *) json_gobject_deserialize (BUILDER_TYPE_SOURCE_SVN, node);
+   else
+
+--- flatpak-builder-0.10.10/src/Makefile.am.inc~	2018-04-26 10:18:24.000000000 +0300
++++ flatpak-builder-0.10.10/src/Makefile.am.inc	2018-05-29 23:31:59.605203675 +0300
+@@ -20,8 +20,6 @@ flatpak_builder_SOURCES = \
+ 	src/builder-source-archive.h \
+ 	src/builder-source-git.c \
+ 	src/builder-source-git.h \
+-	src/builder-source-bzr.c \
+-	src/builder-source-bzr.h \
+ 	src/builder-source-svn.c \
+ 	src/builder-source-svn.h \
+ 	src/builder-source-file.c \
