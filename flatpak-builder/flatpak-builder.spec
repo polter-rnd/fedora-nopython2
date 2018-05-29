@@ -54,6 +54,7 @@ See http://flatpak.org/ for more information.
 
 
 %build
+autoreconf
 %configure \
     --enable-docbook-docs \
     --with-dwarf-header=%{_includedir}/libdwarf
