@@ -1,6 +1,6 @@
 Name:           inkscape
 Version:        0.92.3
-Release:        1%{?dist}.nopy2
+Release:        1.nopy2%{?dist}
 Summary:        Vector-based drawing program using SVG
 
 License:        GPLv2+ and CC-BY
@@ -16,7 +16,7 @@ Source2:	Fedora-Color-Palette.gpl
 # Script for autoremoving python extension
 Source3:        %{name}-remove-extensions.sh
 # https://gitlab.com/inkscape/inkscape/commit/9418824967eb4c53371ef8588243fed4cab496e0
-Patch0:		%{name}-%{version}-nopython2.patch
+Patch0:		%{name}-%{version}-extensions.patch
 
 BuildRequires:  aspell-devel aspell-en
 BuildRequires:  atk-devel
