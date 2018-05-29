@@ -1,0 +1,85 @@
+--- inkscape-0.92.3/share/keys/corel-draw-x8.xml~	2018-03-11 20:38:09.000000000 +0000
++++ inkscape-0.92.3/share/keys/corel-draw-x8.xml	2018-05-28 21:28:02.013590742 +0000
+@@ -164,9 +164,6 @@ in the style of Corel DRAW X8. See defau
+ 
+ 
+ 
+-<!-- Extensions -->
+-
+-<bind key="F1" action="org.inkscape.help.manual" display="true" />
+ 
+ <!-- Filters -->
+ 
+
+--- inkscape-0.92.3/share/keys/default.xml~	2018-03-11 20:38:09.000000000 +0000
++++ inkscape-0.92.3/share/keys/default.xml	2018-05-28 21:19:55.000000000 +0000
+@@ -674,20 +674,5 @@ override) the bindings in the main defau
+   <bind key="Q" modifiers="Alt" action="EffectLast" /> 
+   <bind key="q" modifiers="Shift,Alt" action="EffectLastPref" display="true" />
+   <bind key="Q" modifiers="Shift,Alt" action="EffectLastPref" />
+-  
+-  <!-- You can also assign keys to individual effects. The action should be set to he
+-  effect id from the .inx file, for example "org.ekips.filter.addnodes" for the Add
+-  Nodes effect. -->
+-
+-  <bind key="g" modifiers="Ctrl,Alt" action="org.inkscape.typography.newglyphlayer" display="true"/>
+-  <bind key="G" modifiers="Ctrl,Alt" action="org.inkscape.typography.newglyphlayer"/>
+-
+-<!-- 
+-  <bind key="h" modifiers="Ctrl,Alt" action="org.inkscape.typography.previousglyphlayer" display="true"/>
+-  <bind key="H" modifiers="Ctrl,Alt" action="org.inkscape.typography.previousglyphlayer"/>
+- -->
+- 
+-  <bind key="j" modifiers="Ctrl,Alt" action="org.inkscape.typography.nextglyphlayer" display="true"/>
+-  <bind key="J" modifiers="Ctrl,Alt" action="org.inkscape.typography.nextglyphlayer"/>
+ 
+ </keys>
+
+--- inkscape-0.92.3/share/keys/inkscape.xml~	2018-03-11 20:38:09.000000000 +0000
++++ inkscape-0.92.3/share/keys/inkscape.xml	2018-05-28 21:19:23.000000000 +0000
+@@ -672,20 +672,5 @@ override) the bindings in the main defau
+   <bind key="Q" modifiers="Alt" action="EffectLast" /> 
+   <bind key="q" modifiers="Shift,Alt" action="EffectLastPref" display="true" />
+   <bind key="Q" modifiers="Shift,Alt" action="EffectLastPref" />
+-  
+-  <!-- You can also assign keys to individual effects. The action should be set to he
+-  effect id from the .inx file, for example "org.ekips.filter.addnodes" for the Add
+-  Nodes effect. -->
+-
+-  <bind key="g" modifiers="Ctrl,Alt" action="org.inkscape.typography.newglyphlayer" display="true"/>
+-  <bind key="G" modifiers="Ctrl,Alt" action="org.inkscape.typography.newglyphlayer"/>
+-
+-<!-- 
+-  <bind key="h" modifiers="Ctrl,Alt" action="org.inkscape.typography.previousglyphlayer" display="true"/>
+-  <bind key="H" modifiers="Ctrl,Alt" action="org.inkscape.typography.previousglyphlayer"/>
+- -->
+- 
+-  <bind key="j" modifiers="Ctrl,Alt" action="org.inkscape.typography.nextglyphlayer" display="true"/>
+-  <bind key="J" modifiers="Ctrl,Alt" action="org.inkscape.typography.nextglyphlayer"/>
+ 
+ </keys>
+
+--- inkscape-0.92.3/src/menus-skeleton.h~	2018-03-11 20:38:09.000000000 +0000
++++ inkscape-0.92.3/src/menus-skeleton.h	2018-05-28 21:31:30.535702714 +0000
+@@ -289,9 +289,6 @@ static char const menus_skeleton[] =
+ "       <effects-list/>\n"
+ "   </submenu>\n"
+ "   <submenu name=\"" N_("_Help") "\">\n"
+-"       <verb verb-id=\"org.inkscape.help.manual\" />\n"
+-"       <verb verb-id=\"org.inkscape.help.keys\" />\n"
+-"       <verb verb-id=\"org.inkscape.help.askaquestion\" />\n"
+ "       <submenu name=\"" N_("Tutorials") "\">\n"
+ "           <verb verb-id=\"TutorialsBasic\" />\n"
+ "           <verb verb-id=\"TutorialsShapes\" />\n"
+@@ -306,11 +303,6 @@ static char const menus_skeleton[] =
+ "           <verb verb-id=\"TutorialsTips\" />\n"
+ "       </submenu>\n"
+ //"       <verb verb-id=\"org.inkscape.dialogs.extensioneditor\" />\n"
+-"       <verb verb-id=\"org.inkscape.help.commandline\" />\n"
+-"       <verb verb-id=\"org.inkscape.help.faq\" />\n"
+-"       <verb verb-id=\"org.inkscape.help.relnotes\" />\n"
+-"       <verb verb-id=\"org.inkscape.help.reportabug\" />\n"
+-"       <verb verb-id=\"org.inkscape.help.svgspec\" />\n"
+ "       <separator/>\n"
+ "       <verb verb-id=\"HelpAboutMemory\" />\n"
+ "       <verb verb-id=\"HelpAbout\" />\n"
