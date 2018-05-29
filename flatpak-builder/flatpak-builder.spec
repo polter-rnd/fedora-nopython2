@@ -12,7 +12,7 @@ URL:            http://flatpak.org/
 Source0:        https://github.com/flatpak/flatpak-builder/releases/download/%{version}/%{name}-%{version}.tar.xz
 
 # Patch to remove bzr dependency
-Patch0:		%{name}-%{version}-nopy2.patch
+Patch0:		%{name}-%{version}-bzr.patch
 
 BuildRequires:  gettext
 BuildRequires:  docbook-dtds
