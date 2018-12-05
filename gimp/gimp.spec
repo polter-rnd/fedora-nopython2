@@ -294,6 +294,7 @@ EOF
 # coming from untrusted sources
 %global _hardened_build 1
 %configure \
+    --disable-python \
 %if %{with mp}
     --enable-mp \
 %else
