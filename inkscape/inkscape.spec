@@ -25,6 +25,7 @@ Patch1:		%{name}-%{version}-extensions.patch
 Patch2:		inkscape-0.92.3-poppler-0.64.patch
 Patch3:		inkscape-0.92.3-poppler-0.65.patch
 
+BuildRequires:  gcc-c++
 BuildRequires:  aspell-devel aspell-en
 BuildRequires:  atk-devel
 BuildRequires:  boost-devel
@@ -35,7 +36,7 @@ BuildRequires:  gc-devel >= 6.4
 BuildRequires:  gettext
 BuildRequires:  gsl-devel
 BuildRequires:  gtkmm24-devel
-BuildRequires:  gtkspell3-devel
+BuildRequires:  gtkspell-devel
 BuildRequires:  ImageMagick-c++-devel
 BuildRequires:  intltool
 BuildRequires:  lcms2-devel
@@ -53,7 +54,7 @@ BuildRequires:  potrace-devel
 BuildRequires:  cmake
 BuildRequires:	libwpd-devel
 BuildRequires:	dbus-glib-devel
-BuildRequires:	libgdl-devel
+BuildRequires:	gtk2-devel
 BuildRequires:	libjpeg-devel
 BuildRequires:	libsigc++20-devel
 BuildRequires:  libcdr-devel
