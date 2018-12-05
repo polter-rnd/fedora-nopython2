@@ -185,7 +185,7 @@ Obsoletes:      %{name}-unstable < %{epoch}:%{major}.%{minor}
 Conflicts:      %{name}-unstable < %{epoch}:%{major}.%{minor}
 %endif
 
-Source0:        http://download.gimp.org/pub/gimp/v%{binver}/gimp-%{version}%{dashprerel}.tar.bz2
+Source0:        https://download.gimp.org/pub/gimp/v%{binver}/gimp-%{version}%{dashprerel}.tar.bz2
 
 %if %{defined gitrev}
 Patch0:         gimp-%{version}%{dashprerel}-git%{gitrev}.patch.bz2
