@@ -26,7 +26,6 @@ Patch2:		inkscape-0.92.3-poppler-0.64.patch
 Patch3:		inkscape-0.92.3-poppler-0.65.patch
 
 BuildRequires:  gcc-c++
-BuildRequires:  python2
 BuildRequires:  aspell-devel aspell-en
 BuildRequires:  atk-devel
 BuildRequires:  boost-devel
@@ -47,6 +46,7 @@ BuildRequires:  libxml2-devel >= 2.6.11
 BuildRequires:  libxslt-devel >= 1.0.15
 BuildRequires:  pango-devel
 BuildRequires:  pkgconfig
+BuildRequires:  python2
 BuildRequires:  poppler-glib-devel
 BuildRequires:  popt-devel
 BuildRequires:  libappstream-glib
