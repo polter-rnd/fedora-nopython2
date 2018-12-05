@@ -36,7 +36,7 @@ BuildRequires:  gc-devel >= 6.4
 BuildRequires:  gettext
 BuildRequires:  gsl-devel
 BuildRequires:  gtkmm24-devel
-BuildRequires:  gtkspell3-devel
+BuildRequires:  gtkspell-devel
 BuildRequires:  ImageMagick-c++-devel
 BuildRequires:  intltool
 BuildRequires:  lcms2-devel
