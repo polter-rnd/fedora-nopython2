@@ -412,8 +412,9 @@ find %{buildroot}%{_libdir}/gimp/%{lib_api_version} -type f | sed "s@^%{buildroo
 %find_lang gimp%{gettext_version}-script-fu
 %find_lang gimp%{gettext_version}-libgimp
 %find_lang gimp%{gettext_version}-tips
+%find_lang gimp%{gettext_version}-python
 
-cat gimp%{gettext_version}.lang gimp%{gettext_version}-std-plug-ins.lang gimp%{gettext_version}-script-fu.lang gimp%{gettext_version}-libgimp.lang gimp%{gettext_version}-tips.lang > gimp-all.lang
+cat gimp%{gettext_version}.lang gimp%{gettext_version}-std-plug-ins.lang gimp%{gettext_version}-script-fu.lang gimp%{gettext_version}-libgimp.lang gimp%{gettext_version}-tips.lang gimp%{gettext_version}-python.lang > gimp-all.lang
 
 #
 # Build the master filelists generated from the above mess.
