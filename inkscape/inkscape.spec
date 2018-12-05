@@ -1,6 +1,6 @@
 Name:           inkscape
 Version:        0.92.3
-Release:        1.nopy2%{?dist}
+Release:        5.nopy2%{?dist}
 Summary:        Vector-based drawing program using SVG
 
 License:        GPLv2+ and CC-BY
@@ -16,7 +16,14 @@ Source2:	Fedora-Color-Palette.gpl
 # Script for autoremoving python extension
 Source3:        %{name}-remove-extensions.sh
 # https://gitlab.com/inkscape/inkscape/commit/9418824967eb4c53371ef8588243fed4cab496e0
-Patch0:		%{name}-%{version}-extensions.patch
+#Patch0:		0001-adapt-to-poppler-0.58.patch
+Patch0:		inkscape-0.92.3-1575842.patch
+
+# Removes all python extensions from menus
+Patch1:		%{name}-%{version}-extensions.patch
+
+Patch2:		inkscape-0.92.3-poppler-0.64.patch
+Patch3:		inkscape-0.92.3-poppler-0.65.patch
 
 BuildRequires:  aspell-devel aspell-en
 BuildRequires:  atk-devel
@@ -89,7 +96,10 @@ graphics in W3C standard Scalable Vector Graphics (SVG) file format.
 
 %prep
 %setup -q
-%%patch0 -p1
+%patch0 -p0
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 # https://bugs.launchpad.net/inkscape/+bug/314381
 # A couple of files have executable bits set,
@@ -209,6 +219,19 @@ install -pm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_datadir}/inkscape/palettes/
 
 
 %changelog
+* Tue Aug 14 2018 Marek Kasik <mkasik@redhat.com> - 0.92.3-5
+- Rebuild for poppler-0.67.0
+
+* Fri Jul 20 2018 Debarshi Ray <rishi@fedoraproject.org> - 0.92.3-4
+- Fix FTBFS due to Python2
+- Remove GTK3-based BuildRequires
+
+* Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.92.3-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Wed Jun 27 2018 Gwyn Ciesla <limburgher@gmail.com> - 0.92.3-2
+- Fix for crash, 1575842.
+
 * Sun May 27 2018 Pavel Artsishevsky <polter.rnd@gmail.com>
 - Removed pyhon dependency (with all python extensions)
 - Removed ruby dependency (with all ruby extensions)
