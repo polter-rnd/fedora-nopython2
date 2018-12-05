@@ -1,0 +1,11 @@
+diff -up gimp-2.10.0/etc/gimprc.in.external-help-browser gimp-2.10.0/etc/gimprc.in
+--- gimp-2.10.0/etc/gimprc.in.external-help-browser	2018-04-28 17:25:02.483242200 +0200
++++ gimp-2.10.0/etc/gimprc.in	2018-04-28 17:25:28.048193595 +0200
+@@ -753,6 +753,7 @@
+ # web-browser.
+ # 
+ # (help-browser gimp)
++(help-browser web-browser)
+ 
+ # When enabled, a search of actions will also return inactive actions. 
+ # Possible values are yes and no.

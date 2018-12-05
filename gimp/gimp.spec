@@ -1,53 +1,43 @@
+# Set this to 0 in stable, 1 in (SONAME-wise) unstable releases
+%global unstable 0
+
 #### options:
 # Use the following --with/--without <option> switches to control how the
 # package will be built:
 # 
-# lcms:        lcms support
-%bcond_without lcms
-# python:      python support
-%bcond_with python
-# mp:          multi processor support
+# mp:             multi processor support
 %bcond_without mp
-# static:      build static libraries
+# static:         build static libraries
 %bcond_with static
-# print:       build the print plugin (if you don't build it externally)
-%bcond_without print
-# gutenprint:  require gutenprint-plugin (instead of gimp-print-plugin) if
-#              internal print plugin isn't built
-%bcond_without gutenprint
-# convenience: install convenience symlinks
-%bcond_without convenience
-# gudev:       use gudev to discover special input devices
-# use gudev from Fedora 15/RHEL7 on
-%bcond_without gudev
-# aalib:       build with AAlib (ASCII art gfx library)
+# default_binary: install unversioned binary
+%if ! %unstable
+%bcond_without default_binary
+%else
+%bcond_with default_binary
+%endif
+# aalib:          build with AAlib (ASCII art gfx library)
 %if 0%{?rhel}
 # don't use aalib on RHEL
 %bcond_with aalib
 %else
 %bcond_without aalib
 %endif
-# hardening:   use various compiler/linker flags to harden binaries against
-#              certain types of exploits
-%bcond_without hardening
-# poppler:     use from version 0.20 on which is GPLv2/GPLv3 dual-licensed
-# use from Fedora 18/RHEL
-%bcond_without poppler
-# helpbrowser  build webkit-based help browser
-%if 0%{?rhel} || 0%{?fedora} >= 26
+# don't build webkit-based help browser by default
 %bcond_with helpbrowser
+# webp support
+%bcond_without webp
+# libunwind support (only available on some architectures)
+%ifarch %{arm} aarch64 hppa ia64 mips ppc %{power64} %{ix86} x86_64
+%bcond_without libunwind
 %else
-%bcond_without helpbrowser
+%bcond_with libunwind
 %endif
-# hardcode python interpreter in python plug-ins
-%bcond_with hardcoded_python
+
+%endif
 
 # skip tests known to be problematic in a specific version
 #global skip_checks_version X.Y.Z
 #global skip_checks test1 test2 test3
-
-# Set this to 0 in stable, 1 in (SONAME-wise) unstable releases
-%global unstable 0
 
 # Set this in pre-releases (e.g. release candidates)
 #global prerel RC1
@@ -74,8 +64,9 @@
 Summary:        GNU Image Manipulation Program
 Name:           gimp
 Epoch:          2
-Version:        2.8.22
-Release:        %{?prerelprefix}4%{dotprerel}%{dotgitrev}.nopy2%{?dist}.2
+Version:        2.10.8
+%global rel 5
+Release:        %{?prerelprefix}%{rel}%{dotprerel}%{dotgitrev}%{?dist}
 
 # Compute some version related macros.
 # Ugly, need to get quoting percent signs straight.
@@ -94,104 +85,109 @@ Release:        %{?prerelprefix}4%{dotprerel}%{dotgitrev}.nopy2%{?dist}.2
 %global lib_micro 0
 %endif # unstable
 
-%if %{with poppler}
+%if %unstable
+%global os_bindir %{_bindir}
+%global os_datadir %{_datadir}
+%undefine _prefix
+%undefine _sysconfdir
+%global _prefix /opt/gimp-%{major}.%{minor}
+%global _sysconfdir %{_prefix}/etc
+%endif
+
 # poppler is "GPLv2 or GPLv3" which makes plug-ins linking to libpoppler such
 # as file-pdf-load GPLv3-only
 License:        GPLv3+ and GPLv3
-%else
-License:        GPLv3+
-%endif
 URL:            http://www.gimp.org/
 %if %{with aalib}
 BuildRequires:  aalib-devel
 %endif
 BuildRequires:  alsa-lib-devel >= 1.0.0
 BuildRequires:  atk-devel >= 2.2.0
-BuildRequires:  babl-devel >= 0.1.10
+BuildRequires:  babl-devel >= 0.1.58
 BuildRequires:  bzip2-devel
-BuildRequires:  cairo-devel >= 1.10.2
-BuildRequires:  curl-devel >= 7.15.1
-BuildRequires:  dbus-glib-devel >= 0.70
-BuildRequires:  fontconfig-devel >= 2.2.0
+BuildRequires:  cairo-devel >= 1.12.2
+BuildRequires:  fontconfig-devel >= 2.12.4
 BuildRequires:  freetype-devel >= 2.1.7
-BuildRequires:  gdk-pixbuf2-devel >= 2.24.1
-BuildRequires:  gegl-devel >= 0.2.0
-%if 0%{?fedora} > 27 || 0%{?rhel} >= 8
+BuildRequires:  gcc
+BuildRequires:  gdk-pixbuf2-devel >= 2.30.8
+BuildRequires:  gegl04-tools
+BuildRequires:  gegl04-devel >= 0.4.12
 BuildRequires:  libgs-devel
-%else
-BuildRequires:  ghostscript-devel
-%endif
-BuildRequires:  glib2-devel >= 2.30.2
-BuildRequires:  gnome-keyring-devel >= 0.4.5
+BuildRequires:  glib2-devel >= 2.54.2
 BuildRequires:  gtk2-devel >= 2.24.10
 BuildRequires:  gtk-doc >= 1.0
+BuildRequires:  harfbuzz-devel >= 0.9.19
 BuildRequires:  iso-codes-devel
 BuildRequires:  jasper-devel
-%if %{with lcms}
-BuildRequires:  lcms2-devel >= 2.2
-%endif
+BuildRequires:  lcms2-devel >= 2.8
 BuildRequires:  libappstream-glib
-BuildRequires:  libexif-devel >= 0.6.15
-BuildRequires:  libgnomeui-devel >= 2.10.0
-%if %{with gudev}
+BuildRequires:  libgexiv2-devel >= 0.10.6
 BuildRequires:  libgudev1-devel >= 167
-%else
-BuildRequires:  hal-devel >= 0.5.7
-%endif
 BuildRequires:  libjpeg-devel
 BuildRequires:  libmng-devel
-BuildRequires:  libpng-devel >= 1.2.37
-BuildRequires:  librsvg2-devel >= 2.36.0
+BuildRequires:  libpng-devel >= 1.6.25
+BuildRequires:  librsvg2-devel >= 2.40.6
 BuildRequires:  libtiff-devel
+%if %{with libunwind}
+BuildRequires:  libunwind-devel >= 1.1.0
+%endif
+%if %{with webp}
+BuildRequires:  libwebp-devel >= 0.6.0
+%endif
 BuildRequires:  libwmf-devel >= 0.2.8
+BuildRequires:  libmypaint-devel >= 1.3.0
+BuildRequires:  mypaint-brushes-devel >= 1.3.0
+BuildRequires:  OpenEXR-devel >= 1.6.1
+BuildRequires:  openjpeg2-devel >= 2.1.0
 BuildRequires:  pango-devel >= 1.29.4
-%if %{with poppler}
-BuildRequires:  poppler-glib-devel >= 0.20.0
-%endif
-%if %{with python}
-BuildRequires:  python2-devel
-BuildRequires:  pygtk2-devel >= 2.10.4
-BuildRequires:  pygobject2-devel
-%endif
+BuildRequires:  perl >= 5.10.0
+BuildRequires:  poppler-glib-devel >= 0.44.0
+BuildRequires:  poppler-data-devel >= 0.4.7
 %if %{with helpbrowser}
 BuildRequires:  webkitgtk-devel >= 1.6.1
 %endif
+BuildRequires:  xz-devel >= 5.0.0
 BuildRequires:  zlib-devel
 BuildRequires:  libX11-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXpm-devel
 
 BuildRequires:  chrpath >= 0.13-5
-BuildRequires:  intltool
-BuildRequires:  gettext
+BuildRequires:  intltool >= 0.40.1
+BuildRequires:  gettext >= 0.19
 BuildRequires:  pkgconfig
 
-Requires:       babl%{?_isa} >= 0.1.10
-Requires:       gegl%{?_isa} >= 0.2.0
-Requires:       glib2 >= 2.28.8
-Requires:       gtk2 >= 2.24.7
-Requires:       pango >= 1.29.4
-Requires:       freetype >= 2.1.7
-Requires:       fontconfig >= 2.2.0
-%if ! %{with print}
-%if %{with gutenprint}
-Requires:       gutenprint-plugin
-%else
-Requires:       gimp-print-plugin
-%endif
-%endif
-Requires:       hicolor-icon-theme
-%if %{with python}
-Requires:       pygtk2 >= 2.10.4
-%endif
-Requires:       xdg-utils
-Requires:       gimp-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-%if ! %{with helpbrowser}
-Obsoletes:      gimp-help-browser < %{?epoch:%{epoch}:}%{version}-%{release}
-Conflicts:      gimp-help-browser < %{?epoch:%{epoch}:}%{version}-%{release}
+%if %unstable
+BuildRequires:  desktop-file-utils
+BuildRequires:  ImageMagick
 %endif
 
-Source0:        https://download.gimp.org/pub/gimp/v%{binver}/gimp-%{version}%{dashprerel}.tar.bz2
+Requires:       babl%{?_isa} >= 0.1.58
+Requires:       gegl04%{?_isa} >= 0.4.12
+Requires:       fontconfig >= 2.12.4
+Requires:       freetype >= 2.1.7
+Requires:       glib2 >= 2.54.0
+Requires:       gtk2 >= 2.24.10
+Requires:       hicolor-icon-theme
+%if %{with libunwind}
+Requires:       libunwind%{?_isa} >= 1.1.0
+%endif
+Recommends:     mypaint-brushes
+Requires:       pango >= 1.29.4
+Requires:       xdg-utils
+Requires:       %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
+%if %{with helpbrowser}
+Recommends:     %{name}-help-browser = %{epoch}:%{version}-%{release}
+%else
+Obsoletes:      %{name}-help-browser < %{epoch}:%{version}-%{release}
+Conflicts:      %{name}-help-browser < %{epoch}:%{version}-%{release}
+%endif
+%if ! %unstable
+Obsoletes:      %{name}-unstable < %{epoch}:%{major}.%{minor}
+Conflicts:      %{name}-unstable < %{epoch}:%{major}.%{minor}
+%endif
+
+Source0:        http://download.gimp.org/pub/gimp/v%{binver}/gimp-%{version}%{dashprerel}.tar.bz2
 
 %if %{defined gitrev}
 Patch0:         gimp-%{version}%{dashprerel}-git%{gitrev}.patch.bz2
@@ -199,26 +195,15 @@ Patch0:         gimp-%{version}%{dashprerel}-git%{gitrev}.patch.bz2
 
 # Try using the system monitor profile for color management by default.
 # Fedora specific.
-Patch1:         gimp-2.8.2-cm-system-monitor-profile-by-default.patch
-
-#Fix screenshot feature in wayland
-Patch2:		gimp-2.8.22-fix-screenshot-in-wayland.patch
-
-#Reported CVE
-Patch3: gimp-2.8.22-CVE-2017-17784.patch
-Patch4: gimp-2.8.22-CVE-2017-17785.patch
-Patch5: gimp-2.8.22-CVE-2017-17786.patch
-Patch6: gimp-2.8.22-CVE-2017-17787.patch
-Patch7: gimp-2.8.22-CVE-2017-17788.patch
-Patch8: gimp-2.8.22-CVE-2017-17789.patch
+Patch1:         gimp-2.10.0-cm-system-monitor-profile-by-default.patch
 
 # use external help browser directly if help browser plug-in is not built
-Patch100:       gimp-2.8.6-external-help-browser.patch
+Patch100:       gimp-2.10.0-external-help-browser.patch
 
 %description
 GIMP (GNU Image Manipulation Program) is a powerful image composition and
 editing program, which can be extremely useful for creating logos and other
-graphics for webpages. GIMP has many of the tools and filters you would expect
+graphics for web pages. GIMP has many of the tools and filters you would expect
 to find in similar commercial offerings, and some interesting extras as well.
 GIMP provides a large image manipulation toolbox, including channel operations
 and layers, effects, sub-pixel imaging and anti-aliasing, and conversions, all
@@ -227,66 +212,70 @@ with multi-level undo.
 %package libs
 Summary:        GIMP libraries
 License:        LGPLv3+
+%if ! %unstable
+Obsoletes:      %{name}-unstable-libs < %{epoch}:%{major}.%{minor}
+Conflicts:      %{name}-unstable-libs < %{epoch}:%{major}.%{minor}
+%endif
 
 %description libs
-The gimp-libs package contains shared libraries needed for the GNU Image
+The %{name}-libs package contains shared libraries needed for the GNU Image
 Manipulation Program (GIMP).
 
 %package devel
 Summary:        GIMP plugin and extension development kit
 License:        LGPLv3+
-Requires:       gimp-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       gimp-devel-tools = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-devel-tools = %{epoch}:%{version}-%{release}
 Requires:       gtk2-devel
 Requires:       glib2-devel
 Requires:       pkgconfig
 Requires:       rpm >= 4.11.0
+%if ! %unstable
+Obsoletes:      %{name}-unstable-devel < %{epoch}:%{major}.%{minor}
+Conflicts:      %{name}-unstable-devel < %{epoch}:%{major}.%{minor}
+%endif
 
 %description devel
-The gimp-devel package contains the static libraries and header files
+The %{name}-devel package contains the static libraries and header files
 for writing GNU Image Manipulation Program (GIMP) plug-ins and
 extensions.
 
 %package devel-tools
 Summary:        GIMP plugin and extension development tools
 License:        LGPLv3+
-Requires:       gimp-devel = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-devel = %{epoch}:%{version}-%{release}
+%if ! %unstable
+Obsoletes:      %{name}-unstable-devel-tools < %{epoch}:%{major}.%{minor}
+Conflicts:      %{name}-unstable-devel-tools < %{epoch}:%{major}.%{minor}
+%endif
 
 %description devel-tools
-The gimp-devel-tools package contains gimptool, a helper program to build GNU
-Image Manipulation Program (GIMP) plug-ins and extensions.
+The %{name}-devel-tools package contains gimptool, a helper program to
+build GNU Image Manipulation Program (GIMP) plug-ins and extensions.
 
 %if %{with helpbrowser}
 %package help-browser
 Summary:        GIMP help browser plug-in
 License:        GPLv3+
-Requires:       gimp%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
+%if ! %unstable
+Obsoletes:      %{name}-unstable-help-browser < %{epoch}:%{major}.%{minor}
+Conflicts:      %{name}-unstable-help-browser < %{epoch}:%{major}.%{minor}
+%endif
 
 %description help-browser
-The gimp-help-browser package contains a lightweight help browser plugin for
+The %{name}-help-browser package contains a lightweight help browser plugin for
 viewing GIMP online help.
 %endif
 
 %prep
 cat << EOF
 --- 8< --- Build options ---------------------------------------------------
-LCMS support:                 %{with lcms}
-Python support:               %{with python}
-MP support:                   %{with mp}
-build static libs:            %{with static}
-build internal print plugin:  %{with print}
-include convenience symlinks: %{with convenience}
-build the print plugin:       %{with print}
-use gudev:                    %{with gudev}
-%if ! %{with print}
-prefer gutenprint over (external) gimp-print plugin:
-                              %{with gutenprint}
-%endif
-build ASCII art plugin        %{with aalib}
-harden binaries:              %{with hardening}
-use poppler:                  %{with poppler}
-build help browser:           %{with helpbrowser}
-hardcode python interpreter   %{with hardcoded_python}
+MP support:                  %{with mp}
+build static libs:           %{with static}
+install default binary:      %{with default_binary}
+build ASCII art plugin       %{with aalib}
+build help browser:          %{with helpbrowser}
 --- >8 ---------------------------------------------------------------------
 EOF
 
@@ -297,36 +286,16 @@ EOF
 %endif
 
 %patch1 -p1 -b .cm-system-monitor-profile-by-default
-%patch2 -p1 -b .fix-screenshot-in-wayland
-%patch3 -p1 -b .CVE-17784
-%patch4 -p1 -b .CVE-17785
-%patch5 -p1 -b .CVE-17786
-%patch6 -p1 -b .CVE-17787
-%patch7 -p1 -b .CVE-17788
-%patch8 -p1 -b .CVE-17789
 
 %if ! %{with helpbrowser}
 %patch100 -p1 -b .external-help-browser
 %endif
 
 %build
-#allow python2 package for RHEL-8
-export RHEL_ALLOW_PYTHON2_FOR_BUILD=1
-
-%if %{with hardening}
 # Use hardening compiler/linker flags because gimp is likely to deal with files
 # coming from untrusted sources
-# used from Fedora 16/RHEL7
 %global _hardened_build 1
-%endif
 %configure \
-    CFLAGS="$CFLAGS -fno-strict-aliasing" \
-    CXXFLAGS="$CXXFLAGS -fno-strict-aliasing" \
-%if %{with python}
-    --enable-python \
-%else
-    --disable-python \
-%endif
 %if %{with mp}
     --enable-mp \
 %else
@@ -337,46 +306,38 @@ export RHEL_ALLOW_PYTHON2_FOR_BUILD=1
 %else
     --disable-static \
 %endif
-%if %{with print}
     --with-print \
-%else
-    --without-print \
-%endif
-%if %{with lcms}
-    --with-lcms=lcms2 \
-%else
-    --without-lcms \
-%endif
     --enable-gimp-console \
 %if %{with aalib}
     --with-aa \
 %else
     --without-aa \
 %endif
-%if %{with gudev}
-    --with-gudev --without-hal \
-%else
-    --with-hal --without-gudev \
-%endif
+    --with-gudev \
 %ifos linux
     --with-linux-input \
-%endif
-%if use_poppler
-    --with-poppler \
-%else
-    --without-poppler \
 %endif
 %if %{with helpbrowser}
     --with-webkit \
 %else
     --without-webkit \
 %endif
-    --with-libtiff --with-libjpeg --with-libpng --with-libmng --with-libjasper \
-    --with-libexif --with-librsvg --with-libxpm --with-gvfs --with-alsa \
-    --with-dbus --with-script-fu --with-cairo-pdf
+%if %{with webp}
+    --with-webp \
+%else
+    --without-webp \
+%endif
+%if %{with default_binary}
+    --enable-default-binary=yes \
+%else
+    --enable-default-binary=no \
+%endif
+    --with-libmng --with-libxpm --with-alsa --with-cairo-pdf \
+    --without-appdata-test
 
 make %{?_smp_mflags}
 
+%if ! %{unstable}
 # Generate RPM macros from pkg-config data:
 # %%_gimp_datadir -- toplevel directory for brushes, gradients, scripts, ...
 # %%_gimp_libdir -- toplevel directory for modules, plug-ins, ...
@@ -420,20 +381,13 @@ cat << EOF > macros.gimp
 %%_gimp_scriptdir ${_gimp_scriptdir}
 %%_gimp_plugindir ${_gimp_plugindir}
 EOF
+%endif
 
 %install
 make DESTDIR=%{buildroot} install
+%if ! %unstable
 install -D -m0644 macros.gimp %{buildroot}%{_rpmconfigdir}/macros.d/macros.gimp
-
-# Update the screenshot shown in the software center
-#
-# NOTE: It would be *awesome* if this file was pushed upstream.
-#
-# See http://people.freedesktop.org/~hughsient/appdata/#screenshots for more details.
-#
-appstream-util replace-screenshots %{buildroot}%{_datadir}/appdata/gimp.appdata.xml \
-  https://raw.githubusercontent.com/hughsie/fedora-appstream/master/screenshots-extra/gimp/a.png \
-  https://raw.githubusercontent.com/hughsie/fedora-appstream/master/screenshots-extra/gimp/b.png 
+%endif
 
 # remove rpaths
 find %buildroot -type f -print0 | xargs -0 -L 20 chrpath --delete --keepgoing 2>/dev/null || :
@@ -445,16 +399,7 @@ find %buildroot -name \*.la -exec %__rm -f {} \;
 # Plugins and modules change often (grab the executeable ones)
 #
 find %{buildroot}%{_libdir}/gimp/%{lib_api_version} -type f | sed "s@^%{buildroot}@@g" | grep -v '\.a$' > gimp-plugin-files
-
-%if %{with python}
-# .pyc and .pyo files don't exist yet
-grep "\.py$" gimp-plugin-files > gimp-plugin-files-py
-for file in $(cat gimp-plugin-files-py); do
-    for newfile in ${file}c ${file}o; do
-        grep -F -q -x "$newfile" gimp-plugin-files || echo "$newfile"
-    done
-done >> gimp-plugin-files
-%endif
+find %{buildroot}%{_libdir}/gimp/%{lib_api_version}/* -type d | sed "s@^%{buildroot}@%%dir @g" >> gimp-plugin-files
 
 %if %{with static}
 find %{buildroot}%{_libdir}/gimp/%{lib_api_version} -type f | sed "s@^%{buildroot}@@g" | grep '\.a$' > gimp-static-files
@@ -468,17 +413,16 @@ find %{buildroot}%{_libdir}/gimp/%{lib_api_version} -type f | sed "s@^%{buildroo
 %find_lang gimp%{gettext_version}-script-fu
 %find_lang gimp%{gettext_version}-libgimp
 %find_lang gimp%{gettext_version}-tips
-%find_lang gimp%{gettext_version}-python
 
-cat gimp%{gettext_version}.lang gimp%{gettext_version}-std-plug-ins.lang gimp%{gettext_version}-script-fu.lang gimp%{gettext_version}-libgimp.lang gimp%{gettext_version}-tips.lang gimp%{gettext_version}-python.lang > gimp-all.lang
+cat gimp%{gettext_version}.lang gimp%{gettext_version}-std-plug-ins.lang gimp%{gettext_version}-script-fu.lang gimp%{gettext_version}-libgimp.lang gimp%{gettext_version}-tips.lang > gimp-all.lang
 
 #
 # Build the master filelists generated from the above mess.
 #
 cat gimp-plugin-files gimp-all.lang > gimp.files
 
-%if %{with convenience}
-# install convenience symlinks
+%if %{with default_binary}
+# install default binary symlinks
 ln -snf gimp-%{binver} %{buildroot}%{_bindir}/gimp
 ln -snf gimp-%{binver}.1 %{buildroot}%{_mandir}/man1/gimp.1
 ln -snf gimp-console-%{binver} %{buildroot}/%{_bindir}/gimp-console
@@ -488,14 +432,48 @@ ln -snf gimptool-%{lib_api_version}.1 %{buildroot}%{_mandir}/man1/gimptool.1
 ln -snf gimprc-%{binver}.5 %{buildroot}/%{_mandir}/man5/gimprc.5
 %endif
 
-%if %{with hardcoded_python}
-# Hardcode python interpreter in shipped python plug-ins. This actually has no
-# effect because gimp maps hashbangs with and without the /usr/bin/env detour
-# to the system python interpreter, but this will avoid false alarms.
-grep -E -rl '^#!\s*%{_bindir}/env\s+python' --include=\*.py "%{buildroot}" |
-    while read file; do
-        sed -r '1s,^#!\s*%{_bindir}/env\s+python,#!%{__python},' -i "$file"
-    done
+%if %unstable
+# install stuff in system locations
+
+# script wrappers for executables
+mkdir -p %{buildroot}%{os_bindir}
+pushd %{buildroot}%{_bindir}
+for exe in *-%{major}.%{minor}; do
+cat << EOF > "%{buildroot}%{os_bindir}/$exe"
+#!/bin/sh
+export LD_LIBRARY_PATH=%{_libdir}
+exec %{_bindir}/$exe "\$@"
+EOF
+    chmod 755 %{buildroot}%{os_bindir}/"$exe"
+done
+popd
+
+# desktop file -- mention version/unstable, use custom icon
+desktop-file-install --dir=%{buildroot}%{os_datadir}/applications \
+    --set-name="GIMP %major.%minor (unstable)" \
+    --set-icon="gimp-%major.%minor" \
+    %{buildroot}%{_datadir}/applications/gimp.desktop
+mv -f %{buildroot}%{os_datadir}/applications/gimp.desktop \
+    %{buildroot}%{os_datadir}/applications/gimp-%major.%minor.desktop
+
+# icons -- overlay major.minor version
+pushd %{buildroot}%{_datadir}/icons/hicolor
+for srcicon in */apps/gimp.png; do
+    geo=${srcicon%%%%/*}
+    dim=${geo%%x*}
+    ps=$((5+$dim/6))
+    sw=$(($dim/50+1))
+    o=$(($dim/26+1))
+    destdir="%{buildroot}%{os_datadir}/icons/hicolor/$geo/apps"
+    desticon="$destdir/gimp-%{major}.%{minor}.png"
+    mkdir -p "$destdir"
+    convert "$srcicon" \
+        -gravity northeast -pointsize $ps -strokewidth $sw \
+        -stroke black -annotate +$o+$(($o+$ps)) %{major}.%{minor} \
+        -stroke none -fill white -annotate +$o+$(($o+$ps)) %{major}.%{minor} \
+        "$desticon"
+done
+popd
 %endif
 
 %check
@@ -512,7 +490,7 @@ EOF
 done
 popd
 %endif
-make check
+make check %{?_smp_mflags}
 
 %ldconfig_scriptlets libs
 
@@ -521,11 +499,13 @@ make check
 %doc AUTHORS ChangeLog NEWS README
 %doc docs/*.xcf*
 %{_datadir}/applications/*.desktop
-%{_datadir}/appdata/*.appdata.xml
+%{_datadir}/metainfo/*.appdata.xml
+%{_datadir}/metainfo/*.metainfo.xml
 
 %dir %{_datadir}/gimp
 %dir %{_datadir}/gimp/%{lib_api_version}
 %{_datadir}/gimp/%{lib_api_version}/dynamics/
+%{_datadir}/gimp/%{lib_api_version}/file-raw/
 %{_datadir}/gimp/%{lib_api_version}/menus/
 %{_datadir}/gimp/%{lib_api_version}/tags/
 %{_datadir}/gimp/%{lib_api_version}/tips/
@@ -537,9 +517,8 @@ make check
 %dir %{_libdir}/gimp/%{lib_api_version}/interpreters
 %dir %{_libdir}/gimp/%{lib_api_version}/modules
 %dir %{_libdir}/gimp/%{lib_api_version}/plug-ins
+%if %{with helpbrowser}
 %exclude %{_libdir}/gimp/%{lib_api_version}/plug-ins/help-browser
-%if %{with python}
-%dir %{_libdir}/gimp/%{lib_api_version}/python
 %endif
 
 %{_datadir}/gimp/%{lib_api_version}/brushes/
@@ -548,6 +527,7 @@ make check
 %{_datadir}/gimp/%{lib_api_version}/gflare/
 %{_datadir}/gimp/%{lib_api_version}/gimpressionist/
 %{_datadir}/gimp/%{lib_api_version}/gradients/
+%{_datadir}/gimp/%{lib_api_version}/icons/
 %{_datadir}/gimp/%{lib_api_version}/images/
 %{_datadir}/gimp/%{lib_api_version}/palettes/
 %{_datadir}/gimp/%{lib_api_version}/patterns/
@@ -567,22 +547,30 @@ make check
 %{_bindir}/gimp-%{binver}
 %{_bindir}/gimp-console-%{binver}
 
-%if %{with convenience}
+%if %{with default_binary}
 %{_bindir}/gimp
 %{_bindir}/gimp-console
 %endif
+
+%{_bindir}/gimp-test-clipboard-%{lib_api_version}
+%{_libexecdir}/gimp-debug-tool-%{lib_api_version}
 
 %{_mandir}/man1/gimp-%{binver}.1*
 %{_mandir}/man1/gimp-console-%{binver}.1*
 %{_mandir}/man5/gimprc-%{binver}.5*
 
-%if %{with convenience}
+%if %{with default_binary}
 %{_mandir}/man1/gimp.1*
 %{_mandir}/man1/gimp-console.1*
 %{_mandir}/man5/gimprc.5*
 %endif
 
 %{_datadir}/icons/hicolor/*/apps/gimp.png
+%if %unstable
+%{os_bindir}/*-%{major}.%{minor}
+%{os_datadir}/applications/gimp-%{major}.%{minor}.desktop
+%{os_datadir}/icons/hicolor/*/apps/gimp-%{major}.%{minor}.png
+%endif
 
 %files libs
 %license COPYING
@@ -625,13 +613,15 @@ make check
 %{_datadir}/aclocal/*.m4
 %{_includedir}/gimp-%{lib_api_version}
 %{_libdir}/pkgconfig/*
+%if ! %unstable
 %{_rpmconfigdir}/macros.d/macros.gimp
+%endif
 
 %files devel-tools
 %{_bindir}/gimptool-%{lib_api_version}
 %{_mandir}/man1/gimptool-%{lib_api_version}.1*
 
-%if %{with convenience}
+%if %{with default_binary}
 %{_bindir}/gimptool
 %{_mandir}/man1/gimptool.1*
 %endif
@@ -642,8 +632,66 @@ make check
 %endif
 
 %changelog
-* Fri Jun 01 2018 Pavel Artsishevsky <polter.rnd@gmail.com>
-- Disabled python, removed python extensions
+* Mon Nov 12 2018 Björn Esser <besser82@fedoraproject.org> - 2:2.10.8-5
+- fix versionized Python interpreter path
+
+* Sat Nov 10 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.8-4
+- more fun with Python byte-compilation on Fedora 28
+
+* Sat Nov 10 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.8-3
+- ensure Python files are byte-compiled
+
+* Sat Nov 10 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.8-2
+- remove obsolete configure options
+- use versionized Python interpreter path
+
+* Sat Nov 10 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.8-1
+- version 2.10.8
+- build with libunwind where available
+
+* Fri Aug 24 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.6-2
+- own all plug-in directories
+
+* Mon Aug 20 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.6-1
+- version 2.10.6
+
+* Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.10.4-1.1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Thu Jul 05 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.4-1
+- version 2.10.4
+- byte-compile Python plug-ins separately from Fedora 29 on
+- ship gimp-test-clipboard-2.0
+
+* Wed May 23 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.2-2
+- bump required babl and gegl versions
+
+* Mon May 21 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.2-1
+- version 2.10.2
+
+* Fri May 11 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.0-4
+- fix external-help-browser patch (thanks to Joel Barrios Dueñas)
+
+* Wed May 02 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.0-3
+- don't let the GIMP pkg-config file require gegl-0.3
+
+* Wed May 02 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.0-2
+- require gegl04-tools instead of gegl (0.2) for building
+
+* Sat Apr 28 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.10.0-1
+- version 2.10.0
+- update dependency versions
+- build with OpenEXR support
+- build with webp support
+- explicitly require perl for building
+- remove obsolete build deps: gnome-keyring-devel, libgnomeui-devel
+- don't run appdata test which requires network access
+
+* Fri Mar 09 2018 Josef Ridky <jridky@redhat.com> - 2:2.8.22-6
+- remove unused gnome-keyring and libgnomeui-devel requirements
+
+* Tue Feb 20 2018 Nils Philippsen <nils@tiptoe.de> - 2:2.8.22-5
+- require gcc for building
 
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.8.22-4.2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
