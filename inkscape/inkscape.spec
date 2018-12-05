@@ -46,7 +46,7 @@ BuildRequires:  libxml2-devel >= 2.6.11
 BuildRequires:  libxslt-devel >= 1.0.15
 BuildRequires:  pango-devel
 BuildRequires:  pkgconfig
-BuildRequires:  python2
+BuildRequires:  python-unversioned-command
 BuildRequires:  poppler-glib-devel
 BuildRequires:  popt-devel
 BuildRequires:  libappstream-glib
