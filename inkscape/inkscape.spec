@@ -24,7 +24,7 @@ Patch2:         inkscape-0.92.3-oob.patch
 Patch3:         inkscape-0.92.3-endofline.patch
 
 # Removes all python extensions from menus
-Patch4:		%{name}-%{version}-extensions.patch
+Patch4:		%{name}-0.92.3-extensions.patch
 
 Provides: bundled(libcroco)
 Provides: bundled(libgdl)
