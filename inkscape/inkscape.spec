@@ -1,13 +1,14 @@
 Name:           inkscape
-Version:        0.92.3
-Release:        5.nopy2%{?dist}
+Version:        0.92.4
+Release:        1.nopy2%{?dist}
 Summary:        Vector-based drawing program using SVG
 
+# Inkscape tags their releases with underscores and in ALLCAPS
+%global repotag %(echo %{name}_%{version} |tr "." "_" |tr "[:lower:]" "[:upper:]")
+
 License:        GPLv2+ and CC-BY
-URL:            http://inkscape.sourceforge.net/
-Source0:        https://media.inkscape.org/dl/resources/file/%{name}-%{version}.tar.bz2
-#Source0:	https://inkscape.org/en/gallery/item/10682/inkscape-0.92.1.tar_XlpI7qT.bz2
-#Source0:	inkscape-r15740.tar.bz2
+URL:            https://inkscape.org/
+Source0:        https://gitlab.com/inkscape/-/archive/%{repotag}/%{name}-%{repotag}.tar.bz2
 # AppData file. Upstream has merged a patch adding an appdata file
 # after into the 0.92 release branch.
 Source1:        %{name}.appdata.xml
@@ -15,15 +16,18 @@ Source1:        %{name}.appdata.xml
 Source2:	Fedora-Color-Palette.gpl
 # Script for autoremoving python extension
 Source3:        %{name}-remove-extensions.sh
-# https://gitlab.com/inkscape/inkscape/commit/9418824967eb4c53371ef8588243fed4cab496e0
-#Patch0:		0001-adapt-to-poppler-0.58.patch
 Patch0:		inkscape-0.92.3-1575842.patch
 
-# Removes all python extensions from menus
-Patch1:		%{name}-%{version}-extensions.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1604371
+Patch1:		inkscape-python2.patch
+Patch2:         inkscape-0.92.3-oob.patch
+Patch3:         inkscape-0.92.3-endofline.patch
 
-Patch2:		inkscape-0.92.3-poppler-0.64.patch
-Patch3:		inkscape-0.92.3-poppler-0.65.patch
+# Removes all python extensions from menus
+Patch4:		%{name}-%{version}-extensions.patch
+
+Provides: bundled(libcroco)
+Provides: bundled(libgdl)
 
 BuildRequires:  gcc-c++
 BuildRequires:  aspell-devel aspell-en
@@ -46,7 +50,7 @@ BuildRequires:  libxml2-devel >= 2.6.11
 BuildRequires:  libxslt-devel >= 1.0.15
 BuildRequires:  pango-devel
 BuildRequires:  pkgconfig
-BuildRequires:  python-unversioned-command
+BuildRequires:  python2
 BuildRequires:  poppler-glib-devel
 BuildRequires:  popt-devel
 BuildRequires:  libappstream-glib
@@ -97,11 +101,13 @@ graphics in W3C standard Scalable Vector Graphics (SVG) file format.
 
 
 %prep
-%setup -q
+%setup -qn inkscape-INKSCAPE_0_92_4
 %patch0 -p0
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%patch2 -p0
+%patch3 -p0
+%patch4 -p1
+pathfix.py -pni "%{__python2} %{py2_shbang_opts}" .
 
 # https://bugs.launchpad.net/inkscape/+bug/314381
 # A couple of files have executable bits set,
@@ -198,6 +204,7 @@ install -pm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_datadir}/inkscape/palettes/
 %{_datadir}/inkscape/templates
 %{_datadir}/inkscape/ui
 %{_datadir}/appdata/*inkscape.appdata.xml
+%{_datadir}/metainfo/inkscape.appdata.xml
 %{_datadir}/applications/*inkscape.desktop
 %{_datadir}/icons/hicolor/*/*/inkscape*
 %{_mandir}/*/*gz
@@ -221,6 +228,30 @@ install -pm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_datadir}/inkscape/palettes/
 
 
 %changelog
+* Tue Jan 22 2019 Pavel Artsishevsky <polter.rnd@gmail.com>
+- Updated nopy2 version of the package.
+
+* Thu Jan 17 2019 Gwyn Ciesla <limburgher@gmail.com> - 0.92.4-1
+- 0.92.4
+
+* Tue Jan 15 2019 Gwyn Ciesla <limburgher@gmail.com> - 0.92.3-11
+- End of line patch.
+
+* Mon Jan 14 2019 Gwyn Ciesla <limburgher@gmail.com> - 0.92.3-10
+- Alternate out of bounds patch.
+
+* Fri Jan 11 2019 Gwyn Ciesla <limburgher@gmail.com> - 0.92.3-9
+- Patch for out of bounds.
+
+* Tue Dec 04 2018 Gwyn Ciesla <limburgher@gmail.com> - 0.92.3-8
+- Add bundled provides.
+
+* Tue Sep 11 2018 Gwyn Ciesla <limburgher@gmail.com> - 0.92.3-7
+- Fix shebang handling.
+
+* Tue Aug 28 2018 Michael Cronenworth <mike@cchtml.com> - 0.92.3-6
+- Rebuild for ImageMagick 6.9.10
+
 * Tue Aug 14 2018 Marek Kasik <mkasik@redhat.com> - 0.92.3-5
 - Rebuild for poppler-0.67.0
 
