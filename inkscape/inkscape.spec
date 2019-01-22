@@ -8,7 +8,7 @@ Summary:        Vector-based drawing program using SVG
 
 License:        GPLv2+ and CC-BY
 URL:            https://inkscape.org/
-Source0:        https://gitlab.com/inkscape/-/archive/%{repotag}/%{name}-%{repotag}.tar.bz2
+Source0:        https://media.inkscape.org/dl/resources/file/%{name}-%{version}.tar.bz2
 # AppData file. Upstream has merged a patch adding an appdata file
 # after into the 0.92 release branch.
 Source1:        %{name}.appdata.xml
@@ -101,7 +101,7 @@ graphics in W3C standard Scalable Vector Graphics (SVG) file format.
 
 
 %prep
-%setup -qn inkscape-INKSCAPE_0_92_4
+%setup -q
 %patch0 -p0
 %patch1 -p1
 %patch2 -p0
