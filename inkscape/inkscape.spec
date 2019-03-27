@@ -1,6 +1,6 @@
 Name:           inkscape
 Version:        0.92.4
-Release:        1.nopy2%{?dist}
+Release:        4.nopy2%{?dist}
 Summary:        Vector-based drawing program using SVG
 
 # Inkscape tags their releases with underscores and in ALLCAPS
@@ -228,6 +228,15 @@ install -pm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_datadir}/inkscape/palettes/
 
 
 %changelog
+* Fri Feb 08 2019 Gwyn Ciesla <gwync@protonmail.com> - 0.92.4-4
+- Drop gvfs.
+
+* Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.92.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Fri Jan 25 2019 Marek Kasik <mkasik@redhat.com> - 0.92.4-2
+- Rebuild for poppler-0.73.0
+
 * Tue Jan 22 2019 Pavel Artsishevsky <polter.rnd@gmail.com>
 - Updated nopy2 version of the package.
 
