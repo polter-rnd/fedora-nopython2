@@ -62,26 +62,26 @@
 Summary:        GNU Image Manipulation Program
 Name:           gimp
 Epoch:          2
-Version:        2.10.8
-%global rel 5
-Release:        %{?prerelprefix}%{rel}%{dotprerel}%{dotgitrev}%{?dist}
+Version:        2.10.18
+%global rel 2
+Release:        %{?prerelprefix}%{rel}%{dotprerel}%{dotgitrev}.nopy2%{?dist}
 
 # Compute some version related macros.
 # Ugly, need to get quoting percent signs straight.
 %global major %(ver=%{version}; echo ${ver%%%%.*})
 %global minor %(ver=%{version}; ver=${ver#%major.}; echo ${ver%%%%.*})
 %global micro %(ver=%{version}; ver=${ver#%major.%minor.}; echo ${ver%%%%.*})
-%global binver %{major}.%{minor}
+%global binver 2.10
 %global interface_age 0
 %global gettext_version %{major}0
 %global lib_api_version %{major}.0
 %if ! %unstable
 %global lib_minor %(echo $[%minor * 100])
 %global lib_micro %micro
-%else # unstable
+%else
 %global lib_minor %(echo $[%minor * 100 + %{micro}])
 %global lib_micro 0
-%endif # unstable
+%endif
 
 %if %unstable
 %global os_bindir %{_bindir}
@@ -101,7 +101,7 @@ BuildRequires:  aalib-devel
 %endif
 BuildRequires:  alsa-lib-devel >= 1.0.0
 BuildRequires:  atk-devel >= 2.2.0
-BuildRequires:  babl-devel >= 0.1.58
+BuildRequires:  babl-devel >= 0.1.74
 BuildRequires:  bzip2-devel
 BuildRequires:  cairo-devel >= 1.12.2
 BuildRequires:  fontconfig-devel >= 2.12.4
@@ -109,10 +109,10 @@ BuildRequires:  freetype-devel >= 2.1.7
 BuildRequires:  gcc
 BuildRequires:  gdk-pixbuf2-devel >= 2.30.8
 BuildRequires:  gegl04-tools
-BuildRequires:  gegl04-devel >= 0.4.12
+BuildRequires:  gegl04-devel >= 0.4.22
 BuildRequires:  libgs-devel
 BuildRequires:  glib2-devel >= 2.54.2
-BuildRequires:  gtk2-devel >= 2.24.10
+BuildRequires:  gtk2-devel >= 2.24.32
 BuildRequires:  gtk-doc >= 1.0
 BuildRequires:  harfbuzz-devel >= 0.9.19
 BuildRequires:  iso-codes-devel
@@ -139,7 +139,7 @@ BuildRequires:  OpenEXR-devel >= 1.6.1
 BuildRequires:  openjpeg2-devel >= 2.1.0
 BuildRequires:  pango-devel >= 1.29.4
 BuildRequires:  perl >= 5.10.0
-BuildRequires:  poppler-glib-devel >= 0.44.0
+BuildRequires:  poppler-glib-devel >= 0.50.0
 BuildRequires:  poppler-data-devel >= 0.4.7
 %if %{with helpbrowser}
 BuildRequires:  webkitgtk-devel >= 1.6.1
@@ -160,12 +160,12 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
 %endif
 
-Requires:       babl%{?_isa} >= 0.1.58
-Requires:       gegl04%{?_isa} >= 0.4.12
+Requires:       babl%{?_isa} >= 0.1.74
+Requires:       gegl04%{?_isa} >= 0.4.22
 Requires:       fontconfig >= 2.12.4
 Requires:       freetype >= 2.1.7
-Requires:       glib2 >= 2.54.0
-Requires:       gtk2 >= 2.24.10
+Requires:       glib2 >= 2.54.2
+Requires:       gtk2 >= 2.24.32
 Requires:       hicolor-icon-theme
 %if %{with libunwind}
 Requires:       libunwind%{?_isa} >= 1.1.0
@@ -185,6 +185,10 @@ Obsoletes:      %{name}-unstable < %{epoch}:%{major}.%{minor}
 Conflicts:      %{name}-unstable < %{epoch}:%{major}.%{minor}
 %endif
 
+#Demodularizing of gimp (#1772469)
+Obsoletes:	%{name} < %{epoch}:%{version}-%{release}
+Conflicts:	%{name} < %{epoch}:%{version}-%{release}
+
 Source0:        https://download.gimp.org/pub/gimp/v%{binver}/gimp-%{version}%{dashprerel}.tar.bz2
 
 %if %{defined gitrev}
@@ -194,6 +198,12 @@ Patch0:         gimp-%{version}%{dashprerel}-git%{gitrev}.patch.bz2
 # Try using the system monitor profile for color management by default.
 # Fedora specific.
 Patch1:         gimp-2.10.0-cm-system-monitor-profile-by-default.patch
+
+# bz#1706653
+Patch2:         gimp-2.10.12-default-font.patch
+
+# don't phone home to check for updates by default
+Patch3:         gimp-2.10.18-no-phone-home-default.patch
 
 # use external help browser directly if help browser plug-in is not built
 Patch100:       gimp-2.10.0-external-help-browser.patch
@@ -214,6 +224,9 @@ License:        LGPLv3+
 Obsoletes:      %{name}-unstable-libs < %{epoch}:%{major}.%{minor}
 Conflicts:      %{name}-unstable-libs < %{epoch}:%{major}.%{minor}
 %endif
+#Demodularizing of gimp (#1772469)
+Obsoletes:      %{name}-libs < %{epoch}:%{version}-%{release}
+Conflicts:      %{name}-libs < %{epoch}:%{version}-%{release}
 
 %description libs
 The %{name}-libs package contains shared libraries needed for the GNU Image
@@ -232,6 +245,9 @@ Requires:       rpm >= 4.11.0
 Obsoletes:      %{name}-unstable-devel < %{epoch}:%{major}.%{minor}
 Conflicts:      %{name}-unstable-devel < %{epoch}:%{major}.%{minor}
 %endif
+#Demodularizing of gimp (#1772469)
+Obsoletes:      %{name}-devel < %{epoch}:%{version}-%{release}
+Conflicts:      %{name}-devel < %{epoch}:%{version}-%{release}
 
 %description devel
 The %{name}-devel package contains the static libraries and header files
@@ -246,6 +262,9 @@ Requires:       %{name}-devel = %{epoch}:%{version}-%{release}
 Obsoletes:      %{name}-unstable-devel-tools < %{epoch}:%{major}.%{minor}
 Conflicts:      %{name}-unstable-devel-tools < %{epoch}:%{major}.%{minor}
 %endif
+#Demodularizing of gimp (#1772469)
+Obsoletes:      %{name}-devel-tools < %{epoch}:%{version}-%{release}
+Conflicts:      %{name}-devel-tools < %{epoch}:%{version}-%{release}
 
 %description devel-tools
 The %{name}-devel-tools package contains gimptool, a helper program to
@@ -260,6 +279,9 @@ Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 Obsoletes:      %{name}-unstable-help-browser < %{epoch}:%{major}.%{minor}
 Conflicts:      %{name}-unstable-help-browser < %{epoch}:%{major}.%{minor}
 %endif
+#Demodularizing of gimp (#1772469)
+Obsoletes:      %{name}-help-browser < %{epoch}:%{version}-%{release}
+Conflicts:      %{name}-help-browser < %{epoch}:%{version}-%{release}
 
 %description help-browser
 The %{name}-help-browser package contains a lightweight help browser plugin for
@@ -284,6 +306,8 @@ EOF
 %endif
 
 %patch1 -p1 -b .cm-system-monitor-profile-by-default
+%patch2 -p1 -b .font-default
+%patch3 -p1 -b .no-phone-home-default
 
 %if ! %{with helpbrowser}
 %patch100 -p1 -b .external-help-browser
@@ -332,6 +356,9 @@ EOF
     --enable-default-binary=no \
 %endif
     --with-libmng --with-libxpm --with-alsa --with-cairo-pdf \
+%if 0%{?flatpak}
+    --with-icc-directory=/run/host/usr/share/color/icc/ \
+%endif
     --without-appdata-test
 
 make %{?_smp_mflags}
@@ -533,6 +560,7 @@ make check %{?_smp_mflags}
 %{_datadir}/gimp/%{lib_api_version}/patterns/
 %{_datadir}/gimp/%{lib_api_version}/scripts/
 %{_datadir}/gimp/%{lib_api_version}/themes/
+%{_datadir}/gimp/%{lib_api_version}/gimp-release
 
 %dir %{_sysconfdir}/gimp
 %dir %{_sysconfdir}/gimp/%{lib_api_version}
@@ -543,6 +571,7 @@ make check %{?_smp_mflags}
 %config(noreplace) %{_sysconfdir}/gimp/%{lib_api_version}/sessionrc
 %config(noreplace) %{_sysconfdir}/gimp/%{lib_api_version}/templaterc
 %config(noreplace) %{_sysconfdir}/gimp/%{lib_api_version}/menurc
+%config(noreplace) %{_sysconfdir}/gimp/%{lib_api_version}/toolrc
 
 %{_bindir}/gimp-%{binver}
 %{_bindir}/gimp-console-%{binver}
@@ -603,9 +632,6 @@ make check %{?_smp_mflags}
 %doc %{_datadir}/gtk-doc
 
 %{_libdir}/*.so
-%dir %{_libdir}/gimp
-%dir %{_libdir}/gimp/%{lib_api_version}
-%dir %{_libdir}/gimp/%{lib_api_version}/modules
 %ifnos linux
 %{_libdir}/*.la
 %{_libdir}/gimp/%{lib_api_version}/modules/*.la
@@ -632,6 +658,66 @@ make check %{?_smp_mflags}
 %endif
 
 %changelog
+* Fri May 15 2020 Kalev Lember <klember@redhat.com> - 2:2.10.18-2
+- Rebuild for libmypaint 1.6.1
+
+* Sun Feb 23 2020 Nils Philippsen <nils@tiptoe.de> - 2:2.10.18-1
+- version 2.10.18
+- bump required versions of babl and gegl04
+- don't phone home to check for updates by default
+- silence warnings about extra tokens
+
+* Wed Feb 19 2020 Kalev Lember <klember@redhat.com> - 2:2.10.16-3
+- Rebuild for libmypaint 1.5.0
+
+* Wed Feb 19 2020 Josef Ridky <jridky@redhat.com> - 2:2.10.16-2
+- fix NVR (no build provided)
+
+* Wed Feb 19 2020 Josef Ridky <jridky@redhat.com> - 2:2.10.16-1.1
+- New upstream release 2.10.16 (#1804449)
+
+* Tue Jan 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.10.14-4.1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Fri Jan 17 2020 Marek Kasik <mkasik@redhat.com> - 2:2.10.14-4
+- Rebuild for poppler-0.84.0
+
+* Thu Jan 09 2020 Josef Ridky <jridky@redhat.com> - 2:2.10.14-3
+- Demodularizing of gimp (#1772469)
+
+* Mon Nov 18 2019 Kalev Lember <klember@redhat.com> - 2:2.10.14-2
+- Rebuild for libmypaint 1.4.0
+
+* Mon Nov 04 2019 Kalev Lember <klember@redhat.com> - 2:2.10.14-1
+- Update to 2.10.14
+
+* Tue Aug 20 2019 Josef Ridky <jridky@redhat.com> - 2:2.10.12-3
+- Fix default configuration for font folders (#1706653)
+
+* Wed Jul 31 2019 Josef Ridky <jridky@redhat.com> - 2:2.10.12-2
+- Fix issue with reading SVG files (#1715882)
+
+* Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2:2.10.12-1.1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
+* Thu Jun 13 2019 Kalev Lember <klember@redhat.com> - 2:2.10.12-1
+- Update to 2.10.12
+
+* Thu Apr 11 2019 Richard Shaw <hobbes1069@gmail.com> - 2:2.10.10-2
+- Rebuild for OpenEXR 2.3.0.
+
+* Mon Apr 08 2019 Josef Ridky <jridky@redhat.com> - 2:2.10.10-1
+- New upstream release 2.10.10 (#1697119)
+
+* Mon Mar 25 2019 Josef Ridky <jridky@redhat.com> - 2:2.10.8-8
+- Rebuild for gegl04 rebase
+
+* Fri Feb 01 2019 Caolán McNamara <caolanm@redhat.com> - 2:2.10.8-7
+- Rebuilt for fixed libwmf soname
+
+* Thu Jan 31 2019 Kalev Lember <klember@redhat.com> - 2:2.10.8-6
+- Rebuilt for libwmf soname bump
+
 * Mon Nov 12 2018 Björn Esser <besser82@fedoraproject.org> - 2:2.10.8-5
 - fix versionized Python interpreter path
 
