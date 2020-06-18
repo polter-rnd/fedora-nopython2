@@ -62,8 +62,8 @@
 Summary:        GNU Image Manipulation Program
 Name:           gimp
 Epoch:          2
-Version:        2.10.18
-%global rel 2
+Version:        2.10.20
+%global rel 1
 Release:        %{?prerelprefix}%{rel}%{dotprerel}%{dotgitrev}.nopy2%{?dist}
 
 # Compute some version related macros.
@@ -160,8 +160,8 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
 %endif
 
-Requires:       babl%{?_isa} >= 0.1.74
-Requires:       gegl04%{?_isa} >= 0.4.22
+Requires:       babl%{?_isa} >= 0.1.78
+Requires:       gegl04%{?_isa} >= 0.4.24
 Requires:       fontconfig >= 2.12.4
 Requires:       freetype >= 2.1.7
 Requires:       glib2 >= 2.54.2
@@ -658,6 +658,9 @@ make check %{?_smp_mflags}
 %endif
 
 %changelog
+* Mon Jun 15 2020 Josef Ridky <jridky@redhat.com> - 2:2.10.20-1
+- New upstream release 2.10.20
+
 * Fri May 15 2020 Kalev Lember <klember@redhat.com> - 2:2.10.18-2
 - Rebuild for libmypaint 1.6.1
 
